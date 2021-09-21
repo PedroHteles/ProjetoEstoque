@@ -5,12 +5,8 @@ import numpy as np
 import json
 
 
-webcam = cv2.VideoCapture(0)
-webcam.set(3,640)
-webcam.set(4,480)
 
-produto ='{"p":1234,"e":1}'
-endereco = '{"end":1}'
+
 
 
 # try:
@@ -35,13 +31,15 @@ endereco = '{"end":1}'
 
 # errados = []
 # corretos = []
-produtos = []
 enderecos = []
 itens = []
 teste = {}
 
 
-img = cv2.imread('final.png')
+img = cv2.imread('opa.png')
+webcam = cv2.VideoCapture(0)
+webcam.set(3,640)
+webcam.set(4,480)
 
 while True:
     validacao, frame = webcam.read()
@@ -51,31 +49,33 @@ while True:
         try:   
             qr = json.loads(myData)
             if qr not in itens:
+                produtos = []
+                product = {}
                 if len(qr) == 2:
-                    if {'p':qr["p"],'e':qr["e"]} not in produtos:
-                        product = {}
+                    if {'p':qr["p"],'e':qr["e"]}:
                         product['p'] = qr['p']
                         product['e'] = qr['e']
-                        produtos.append(product)  
+                        print(len(product))
+                        if len(product) <= 2:
+                            pts = np.array([barcode.polygon], np.int32)
+                            pts = pts.reshape((-1,1,2))
+                            cv2.polylines(img,[pts],True,(0,255,0),5)  
                 elif len(qr) == 1:
-                    if {'end':qr["end"]} not in enderecos:
-        
-                        enderecos.append({'end':qr["end"]})
+                    if {'end':qr["end"]}:
+                        pts = np.array([barcode.polygon], np.int32)
+                        pts = pts.reshape((-1,1,2))
+                        cv2.polylines(img,[pts],True,(255,0,0),5)  
+                        print({'end':qr["end"]})
 
         except:
+            pts = np.array([barcode.polygon], np.int32)
+            pts = pts.reshape((-1,1,2))
+            cv2.polylines(img,[pts],True,(0,0,255),5)  
             print('erro')
-    break
+            
+    
+    cv2.imshow("teste",img)
+    cv2.waitKey(5)
 
 # if produtos['e'] == enderecos['end']:
 #     print('ok')
-print(produtos)
-print(enderecos)
-
-
-        
-    #     pts = np.array([barcode.polygon], np.int32)
-    #     pts = pts.reshape((-1,1,2))
-    #     cv2.polylines(frame,[pts],True,(255,0,255),5)  
-    # cv2.imshow("teste",frame)
-    # cv2.waitKey(5)
-
