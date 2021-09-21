@@ -3,79 +3,76 @@ import cv2
 from pyzbar.pyzbar import decode
 import numpy as np
 import json
+import time
 
 
 
 
 
-
-# try:
-
-#     endereco = json.loads(endereco)
-#     valida = endereco["end"]
-#     try:
-#         produto = json.loads(produto)
-#         valida = produto["p"],produto["e"]
-        
-#         print(f'''Endereco: {endereco["end"]}''')
-#         print(f'''Produto:'{produto["p"]}, Endereco-Do-Produto:{produto["e"]}''')
-#         print(f'''Posicao-Pedido: {produto["p"]} Endereco: {produto["e"]}''', produto["e"] == endereco["end"])
-
-#     except:
-#         print('qr code produto errado')
-    
-# except:
-#     print('qr code endereco errado')
-
-
-
-# errados = []
-# corretos = []
-enderecos = []
-itens = []
-teste = {}
-
-
-img = cv2.imread('opa.png')
+img = cv2.imread('agrvai.png')
 webcam = cv2.VideoCapture(0)
 webcam.set(3,640)
 webcam.set(4,480)
 
+
+            
+produt = []
+enderc = [ ]
+produtos = []
+enderecos = []
+a=[]
+def lerqr(x):
+    
+    for barcode in decode(x):
+        myData = barcode.data
+        qr = json.loads(myData)
+        product = {}
+
+        try:
+            if qr not in produtos and qr['p'] > 0:
+                p = (qr['p'],qr['e'])
+                product['p'] = qr['p']
+                product['e'] = qr['e'] 
+                produtos.append(qr)
+                produt.append(p)
+                pts = np.array([barcode.polygon], np.int32)
+                pts = pts.reshape((-1,1,2))
+                cv2.polylines(img,[pts],True,(0,255,0),5)  
+                a.append(p)
+            elif qr not in enderecos and qr['p'] == 0:
+                product['e'] = qr['e']
+                enderecos.append(qr)
+                p = (qr['e'])
+                enderc.append(p)
+                pts = np.array([barcode.polygon], np.int32)
+                pts = pts.reshape((-1,1,2))
+                cv2.polylines(img,[pts],True,(0,255,0),5)  
+                a.append(p)
+            elif qr:
+                pts = np.array([barcode.polygon], np.int32)
+                pts = pts.reshape((-1,1,2))
+                cv2.polylines(img,[pts],True,(110,0,85),5)  
+  
+        except:
+            print('AAA')
+        
+
+
+
 while True:
     validacao, frame = webcam.read()
-
-    for barcode in decode(img):
-        myData = barcode.data
-        try:   
-            qr = json.loads(myData)
-            if qr not in itens:
-                produtos = []
-                product = {}
-                if len(qr) == 2:
-                    if {'p':qr["p"],'e':qr["e"]}:
-                        product['p'] = qr['p']
-                        product['e'] = qr['e']
-                        print(len(product))
-                        if len(product) <= 2:
-                            pts = np.array([barcode.polygon], np.int32)
-                            pts = pts.reshape((-1,1,2))
-                            cv2.polylines(img,[pts],True,(0,255,0),5)  
-                elif len(qr) == 1:
-                    if {'end':qr["end"]}:
-                        pts = np.array([barcode.polygon], np.int32)
-                        pts = pts.reshape((-1,1,2))
-                        cv2.polylines(img,[pts],True,(255,0,0),5)  
-                        print({'end':qr["end"]})
-
-        except:
-            pts = np.array([barcode.polygon], np.int32)
-            pts = pts.reshape((-1,1,2))
-            cv2.polylines(img,[pts],True,(0,0,255),5)  
-            print('erro')
-            
+    x = img
+    lerqr(x)
+    lst = np.array(produt)
+    result = np.where(lst == enderc)
+    print(result[0])
     
-    cv2.imshow("teste",img)
-    cv2.waitKey(5)
 
-# if produtos['e'] == enderecos['end']:
-#     print('ok')
+
+
+
+
+
+    
+    cv2.imshow("produtos",img)
+    cv2.waitKey(5)
