@@ -4,6 +4,7 @@ from pyzbar.pyzbar import decode
 import numpy as np
 import json
 import time
+import math 
 
 
 
@@ -15,57 +16,72 @@ webcam.set(3,640)
 webcam.set(4,480)
 
 
+
+
             
-produt = []
-enderc = [ ]
-produtos = []
-enderecos = []
-a=[]
 def lerqr(x):
-    
+
+    produtos = []
+    endereco = []
     for barcode in decode(x):
-        myData = barcode.data
-        qr = json.loads(myData)
-        product = {}
+        (x, y, w, h) = barcode.rect
+    
+        barcodeData = barcode.data.decode("utf-8")
+        barcodeType = barcode.type
+        
+    
 
         try:
-            if qr not in produtos and qr['p'] > 0:
+            qr = json.loads(barcodeData)
+            if (qr['p'],qr['e']) not in produtos and qr['p'] > 0:
                 p = (qr['p'],qr['e'])
-                product['p'] = qr['p']
-                product['e'] = qr['e'] 
-                produtos.append(qr)
-                produt.append(p)
-                pts = np.array([barcode.polygon], np.int32)
-                pts = pts.reshape((-1,1,2))
-                cv2.polylines(img,[pts],True,(0,255,0),5)  
-                a.append(p)
-            elif qr not in enderecos and qr['p'] == 0:
-                product['e'] = qr['e']
-                enderecos.append(qr)
+                produtos.append(p)
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0,255, 0), 2)
+                text = "Produto ({})".format(barcodeType)
+            elif (qr['e']) not in endereco and qr['p'] == 0:
                 p = (qr['e'])
-                enderc.append(p)
-                pts = np.array([barcode.polygon], np.int32)
-                pts = pts.reshape((-1,1,2))
-                cv2.polylines(img,[pts],True,(0,255,0),5)  
-                a.append(p)
-            elif qr:
-                pts = np.array([barcode.polygon], np.int32)
-                pts = pts.reshape((-1,1,2))
-                cv2.polylines(img,[pts],True,(110,0,85),5)  
-  
-        except:
-            print('AAA')
+                endereco.append(p)
+                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                text = "endereco ({})".format(barcodeType)
+            
+            
+            cv2.putText(img, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,0.5, (0, 0, 255), 2)
+
+            result =  np.where(produtos[0][1] in endereco)
+            if np.array(result).size > 0:
+                return np.array(result).size > 0 
+
+
+
+
+            # if qr in produtos and qr['p'] > 0:
+            #     cv2.rectangle(img, (x, y), (x + w, y + h), (0,250,125), 2)
+            #     text = "te ({})".format(barcodeType)
         
+            
+            # if np.array(result).size > 0:
+            #     print('teste')
+        except:
+            text = "erro qr '{}' nao e valido ({})".format(barcodeData,barcodeType)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+            cv2.putText(img, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,0.5, (0, 0, 255), 2)
+
+
+        
+    return
+        
+
+
+
+
 
 
 
 while True:
     validacao, frame = webcam.read()
     x = img
-    lerqr(x)
-    lst = np.array(produt)
-    result = np.where(lst == enderc)
-    print(result[0])
+    print(lerqr(x))
+
     
 
 
