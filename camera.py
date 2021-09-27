@@ -36,76 +36,38 @@ endereco = []
 
 
 
+
 def lerqr(x):
 
     for barcode in decode(x):
         (x, y, w, h) = barcode.rect
         barcodeData = barcode.data.decode("utf-8")
         barcodeType = barcode.type
-        try:
-            qr = json.loads(barcodeData)
+
+        qr = json.loads(barcodeData)
             
-            if (qr['e']) not in endereco and qr['p'] == 0 and len(endereco) == 0:
-                e = (qr['e'],x,y)
-                endereco.append(e)
-                cv2.rectangle(img, (x, y), (x + w, y + h), (50, 50, 0), 30)
-                # text = "endereco ({})".format(e)
-            elif (qr['e']) not in endereco and qr['p'] == 0 and len(endereco) > 0:
-                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 15)
-                
-                
-    
-
-            # if (qr['p'],qr['e'])  not in produtos and qr['p'] > 0 and len(produtos) == 0:
-            #     e = ((qr['p'],qr['e']),x,y)
-            #     produtos.append(e)
-            #     cv2.rectangle(img, (x, y), (x + w, y + h), (50, 50, 0), 30)
-               
-            #     # text = "endereco ({})".format(e)
-                
-            # elif (qr['p'],qr['e'])  not in produtos and qr['p'] > 0 and len(produtos) > 0:
-            #     print('asddddddddddddddddda')
-            #     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 105)
-
-
-                
-            print('x:',produtos[0][1],'y:',produtos[0][2],'                             produto',e)
-            print(endereco , 'endereco')
-
-            # if (qr['p'],qr['e']) not in produtos and qr['p'] > 0 and len(produtos) == 0:
-            #     p = (qr['p'],qr['e'],x,y)
-            #     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 30)
-            #     text = "endereco ({})".format(e)
-            #     print(text)
-            #     produtos.append(p)
-            #     return
-            # elif (qr['p'],qr['e']) not in produtos and qr['p'] > 0 and len(produtos) > 0:
-            #     print('asddddddddddddddddda')
-            #     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 15)
-            #     return
-            # print(produtos)
-
-
-            # if (qr['p'],qr['e']) not in produtos and qr['p'] > 0 and len(produtos) == 0:
-            #     print('aaasasas')
-            #     p = (qr['p'],qr['e'],x,y)
-            #     cv2.rectangle(img, (x, y), (x + w, y + h), (50, 50, 0), 30)
-                
-            #     text = "Produto ({})".format(p) 
-            #     produtos.append(p)
-                
-            #     return
-            # elif (qr['p'],qr['e'])  in produtos and qr['p'] > 0 and len(produtos) > 0:
-            #     print('ccccccccccccccc')
-            #     cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 15)
-            #     return
-
+        if (qr['e']) not in endereco and qr['p'] == 0 and len(endereco) == 0:
+            e = (qr['e'],x,y)
+            endereco.append(e)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 30)
+            # text = "endereco ({})".format(e)
+        elif (qr['e']) not in endereco and qr['p'] == 0 and len(endereco) > 0:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 15)
             
-            # print('x:',produtos[0][2],'y:',produtos[0][3])
-
-        except:
-           print('aguardando qr')
+            
     
+        if (qr['p'],qr['e'])  not in produtos and qr['p'] > 0 and len(produtos) == 0 and endereco != []:
+            if(x > endereco[0][1] - 189 and x < endereco[0][1] + 189):
+                print('teste')
+            print(x,endereco[0][1] - 189)
+            e = ((qr['p'],qr['e']),x,y)
+            produtos.append(e)
+            print(produtos,qr,'x:',x,'y:',y)
+            cv2.rectangle(img, (x, y), (x + w, y + h), (50, 50, 0), 30)   
+        elif (qr['p'],qr['e'])  not in produtos and qr['p'] > 0 and len(produtos) > 0:
+            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 0), 105)
+
+
 
         
 
