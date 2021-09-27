@@ -47,10 +47,6 @@ def lerqr(x):
             
             cv2.putText(img, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,0.5, (0, 0, 255), 2)
 
-            result =  np.where(produtos[0][1] in endereco)
-            if np.array(result).size > 0:
-                return np.array(result).size > 0 
-
 
 
 
@@ -66,9 +62,9 @@ def lerqr(x):
             cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
             cv2.putText(img, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,0.5, (0, 0, 255), 2)
 
-
+        result =  np.where(produtos[0][1] in endereco)
         
-    return
+    return np.array(result).size
         
 
 
