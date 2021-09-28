@@ -21,21 +21,6 @@ endereco = []
 
 
 
-                # result =  np.where(produtos[0][1] in endereco)
-
-                # if (qr['p'],qr['e']) not in produtos and qr['p'] > 0 and len(produtos) == 0:
-                #     p = (qr['p'],qr['e'],x,y)
-                #     # produtos.append(p)
-                #     cv2.rectangle(img, (x, y), (x + w, y + h), (0,255, 0), 3)
-                #     text = "Produto ({})".format(p) 
-                #     cv2.putText(img, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX,0.5, (0, 0, 255), 2)
-                #     result =  np.where(produtos[0][1] in endereco)
-                # elif (qr['p'],qr['e'])  in produtos and qr['p'] > 0:
-                #     cv2.rectangle(img, (x, y), (x + w, y + h), (0,0,0), 20)
-                #     result =  np.where(produtos[0][1] in endereco)
-
-
-
 
 def lerqr(x):
 
@@ -59,7 +44,7 @@ def lerqr(x):
         if (qr['p'],qr['e'])  not in produtos and qr['p'] > 0 and len(produtos) == 0 and endereco != []:
             if(x > endereco[0][1] - 189 and x < endereco[0][1] + 189):
                 print('teste')
-            print(x,endereco[0][1] - 189)
+            print((x / endereco[0][1]) > 0.5)
             e = ((qr['p'],qr['e']),x,y)
             produtos.append(e)
             print(produtos,qr,'x:',x,'y:',y)
