@@ -79,7 +79,7 @@ def lerqr(x):
     
 while True:
     validacao, frame = webcam.read()
-    lerqr(img)
+    lerqr(webcam)
     # print('endereco:',endereco,'produtos:',produtos,'errosEndereco:',errosEndereco,'errosProduto:',errosProdutos)
-    cv2.imshow("produtos",img)
+    cv2.imshow("produtos",webcam)
     cv2.waitKey(5)
