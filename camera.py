@@ -33,13 +33,25 @@ def lerqr(x,height,width):
             if leituraArea:    
 
                 # ///////////////////////////////////////// valida qr //////////////////////////////////////////// 
-                if qrCodigoProduto == 0 and enderecoQr not in enderecoAux:
+                
+                # if qrCodigoProduto == 0 and enderecoQr not in enderecoAux:
+                #     print(' endereco encontrado')
+                #     enderecoAux.append(enderecoQr)
+                # elif (qrCodigoProduto,enderecoQr) not in produtosAux and qrCodigoProduto > 0 and enderecoAux !=[] and enderecoQr in enderecoAux:
+                #     print(' produto encontrado')
+                #     if enderecoQr in enderecoAux  and (qrCodigoProduto,enderecoQr) not in produtosAux:
+                #         produtosAux.append((qrCodigoProduto,enderecoQr))
+
+                if len(enderecoAux)== 0 and qrCodigoProduto == 0 and enderecoQr not in enderecoAux:
                     print(' endereco encontrado')
                     enderecoAux.append(enderecoQr)
-                elif (qrCodigoProduto,enderecoQr) not in produtosAux and qrCodigoProduto > 0 and enderecoAux !=[] and enderecoQr in enderecoAux:
+                elif len(produtosAux)== 0 and  (qrCodigoProduto,enderecoQr) not in produtosAux and qrCodigoProduto > 0 and enderecoAux !=[] and enderecoQr in enderecoAux:
                     print(' produto encontrado')
                     if enderecoQr in enderecoAux  and (qrCodigoProduto,enderecoQr) not in produtosAux:
                         produtosAux.append((qrCodigoProduto,enderecoQr))
+                else:
+                    cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 15)
+
 
                 # ////////////////////////////////////////////// corzinha no qr validado ////////////////////////////////
                 lst = np.array(produtosAux)
