@@ -53,8 +53,6 @@ endereco = []
 #                 cv2.polylines(frame,[pts],True,(0,0,255),50) 
 
 def lerqr(x,height,width):
-    # print(((height - (height * 0.55)) / 2),(width - (width * 0.55))/ 2)
-
     start_point = (int(width / 4), int(height  / 4))
     end_point = (int(width / 1.35), int(height / 1.35))
     color = (255, 0, 0)
@@ -66,9 +64,8 @@ def lerqr(x,height,width):
         barcodeData = barcode.data.decode("utf-8")
         barcodeType = barcode.type
         try:
-            qr = json.loads(barcodeData)
-            # print(qr,y < int(height / 1.35) and y > int(height / 4))
-            
+            qr = json.loads(barcodeData)    
+
             if x < int(width / 1.35) and x > int(width / 4) and y < int(height / 1.35) and y > int(height / 4) and (qr['e']) not in endereco and qr['p'] == 0 and len(endereco) == 0:
                 e = ((qr['e']),(x,y))
                 endereco.append(e)
@@ -80,7 +77,6 @@ def lerqr(x,height,width):
             
             if x < int(width / 1.35) and x > int(width / 4) and y < int(height / 1.35) and y > int(height / 4)and (qr['e']) and qr['p'] == 0 and qr['e'] == endereco[0][0] :
                 cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 255), 2)
-                print(qr,x,y)
 
             
             if x < int(width / 1.35) and x > int(width / 4) and qr['p'] > 0 and (qr['p'],qr['e']) == produtos[0][0]:
