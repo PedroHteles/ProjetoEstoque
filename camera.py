@@ -9,8 +9,6 @@ qrlidos = []
 enderecoLidos = []
 produtosLidos = []
 
-enderecosValidos = []
-produtosValidos = []
 
 tess = [{'p': 0, 'e': 1005}, {'p': 1, 'e': 1005}]
 
@@ -37,6 +35,8 @@ def lerqr(x,height,width):
 
                 if len(decode(img)) == 2:
                     print(qrlidos,qrlidos == tess)
+                    enderecoLidos.clear()
+                    produtosLidos.clear()
 
                 elif len(decode(img)) > 2:
                     for i in qrlidos:
@@ -76,8 +76,8 @@ while True:
     if key == 27:
         break
     if key == 122:
-        erroEnderecoAux = []
-        erroProdutoAux = []
+        enderecoLidos.clear()
+        produtosLidos.clear()
 
 
     
