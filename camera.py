@@ -1,5 +1,5 @@
 import cv2
-from numpy.lib.function_base import append
+from numpy.lib.function_base import append, piecewise
 from pyzbar.pyzbar import decode
 import json
 import numpy as np
@@ -9,8 +9,9 @@ qrlidos = []
 enderecoLidos = []
 produtosLidos = []
 
+enderec = []
 
-tess = [{'p': 0, 'e': 1005}, {'p': 1, 'e': 1005}]
+banco = [({'end': 0, 'e': 25}, {'p': 1, 'e': 25})]
 
 def lerqr(x,height,width):
     start_point = (int(width / 6), int(height  / 6))
@@ -26,46 +27,62 @@ def lerqr(x,height,width):
         
         try:
             qr = json.loads(barcodeData)
-            enderecoQr = qr['e']
-            qrCodigoProduto = qr['p']
+            quantidadeQrIdentificado = len(decode(img))
+            qrEnd = 'end' in qr
+            qrProd = 'p' in qr
             if leituraArea: 
                 if qr not in qrlidos:
-                    qrlidos.append(qr)
-                    return
+                    if qrEnd and qr not in enderec:
+                        enderec.append(qr)
+                    elif len(enderec) > 1 :
+                        if qrEnd:
+                            text = 'end {} invalido'.format(qr)
+                            cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,0.3, (0,0,255), 1)
 
-                if len(decode(img)) == 2:
-                    print(qrlidos,qrlidos == tess)
-                    enderecoLidos.clear()
-                    produtosLidos.clear()
 
-                elif len(decode(img)) > 2:
-                    for i in qrlidos:
-                        if i['p'] == 0:
-                            if i not in enderecoLidos:
-                                enderecoLidos.append(i)
+                    if qrProd and len(enderec) == 1:
+                        for i in enderec: 
+                            if qr['e'] == i['e'] and (enderec[0],qr) not in qrlidos:
+                                dados = (enderec[0],qr)
+                                qrlidos.append(dados)
+                            elif qr['e'] != i['e']:
+                                text = 'produto no enderec errado'
+                                cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,0.3, (0,0,255), 1)
+                    else:
+                        if qrProd and len(enderec) == 0:
+                            text = 'aguardando qr enderec'
+                            cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,0.3, (0,0,255), 1)
+                                
+                
+                
+                if quantidadeQrIdentificado == 2 and len(qrlidos) == 1: 
+                    if qrlidos == banco:
+                        if qrProd:
+                            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                            text = "prod({})".format(qr)
+                        elif qrEnd:
+                            cv2.rectangle(img, (x, y), (x + w, y + h), (255, 255, 0), 2)
+                            text = "end ({})".format(qr)
+                    cv2.putText(img, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX,0.3, (0,0,255), 1)
+                    if qrlidos != banco:
+                        print('teste')
+                        if qr['p'] > 0:
+                            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0,255), 2)
+                        elif qrEnd:
+                            cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
+                        print('produto no endereco errado',qrlidos)
 
-                    if len(enderecoLidos) == 1 and  enderecoLidos !=[]:            
-                        for i in qrlidos:
-                            if i['p'] > 0:
-                                if i not in produtosLidos:
-                                    produtosLidos.append(i)
-                            if len(produtosLidos) > 1:
-                                if qr in  produtosLidos:
-                                    print('mais de 1 produto encontrado!',produtosLidos)
-                                    return produtosLidos
-                    elif len(enderecoLidos) > 1:
-                        if qr in enderecoLidos:
-                            print('mais de 1 endereco encontrado!',enderecoLidos)
-            
+
             else:
-                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0,255), 20)
+                quantidadeQrIdentificado - 1
+                cv2.rectangle(img, (x, y), (x + w, y + h), (87, 1,25), 15)
         except:
             if(leituraArea):
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 2)
 
-img = cv2.imread('./img/dirnal.png')
+
 while True:
-    
+    img = cv2.imread('./img/dirnal.png')
     height, width, channels = img.shape
     lerqr(img,height,width)
     
@@ -77,6 +94,8 @@ while True:
     if key == 122:
         enderecoLidos.clear()
         produtosLidos.clear()
+        qrlidos.clear()
+        enderec.clear()
 
 
     
