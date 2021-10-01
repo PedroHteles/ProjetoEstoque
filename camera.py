@@ -67,7 +67,6 @@ img = cv2.imread('./img/dirnal.png')
 while True:
     
     height, width, channels = img.shape
-    print(len(decode(img)))
     lerqr(img,height,width)
     
   
