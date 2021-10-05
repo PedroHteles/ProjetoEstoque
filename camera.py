@@ -8,6 +8,7 @@ qrlidos = []
 banco = [({'end': 0, 'e': 25}, {'p': 1, 'e': 25})]
 validado = []
 naoValido = []
+areaLeitura = []
 
 def lerqr(x,height,width):
     start_point = (int(width / 8), int(height  / 8))
@@ -26,19 +27,15 @@ def lerqr(x,height,width):
             if leituraArea: 
                 if qrEnd and qr not in qrlidos or qrProd and qr not in qrlidos:
                     qrlidos.append(qr) 
-                # elif qrEnd and qr not in qrlidos:
-                #     print('mais de 1 enderec encontrado',qr)
-                #     # qrlidos.clear()
-                # elif qrProd and qr not in qrlidos:
-                #     print('mais de 1 produto encontrado',qr)
-                #     # qrlidos.clear()
-                elif len(qrlidos) > 2:
-                    cv2.rectangle(img, (x, y), (x + w, y + h), (0,255, 255), 25)
-                    print('mais de 2 qr na area da leitura')
+                if len(decode(img)) > 2:
+                    if qr not in areaLeitura:
+                        areaLeitura.append(qr)
+                        validado.clear()
                     qrlidos.clear()
+                elif len(decode(img)) <= 2:
+                    areaLeitura.clear()
 
-
-                if len(qrlidos) == 2 and qrlidos not in validado:
+                if len(qrlidos) == 2 and qrlidos not in validado and areaLeitura == []:
                     for i in qrlidos:
                         valor = (qrlidos[0],qrlidos[1])
                         if qrProd and 'end' in i: 
@@ -55,9 +52,10 @@ def lerqr(x,height,width):
                             cv2.rectangle(img, (x, y), (x + w, y + h), (0,255, 0), 15)
                         elif qr == i[1]:
                             cv2.rectangle(img, (x, y), (x + w, y + h), (255,0,255), 15)
+            else:
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0,0,255), 15)                   
         except:
             cv2.rectangle(img, (x, y), (x + w, y + h), (0,255, 255), 2)
-
 
 while True:
     img = cv2.imread('./img/dirnal.png')
@@ -67,8 +65,6 @@ while True:
     key = cv2.waitKey(5)
     if key == 27:
         break
-    if key == 122:
-        qrlidos.clear()
 
 
     
