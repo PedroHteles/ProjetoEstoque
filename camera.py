@@ -42,17 +42,9 @@ def lerqr(x,height,width):
                 elif len(decode(img)) == 2:
                     area.clear()
                     if len(decode(img)) == 2 and area == []:
+                        print('validado')
                         valor = (leituraEndereco[0],leituraProduto[0])
-                        if valor[0]['e'] == valor[1]['e']:
-                            print('validado')
-                            if valor not in validado:
-                                validado.append(valor)
-                            return validado
-                        else:
-                            if valor not in naoValido:
-                                print('Nao validado')
-                                naoValido.append(valor)
-                            return naoValido
+                        return valor
                 else:
                     if qr not in area:
                         area.append(qr)
@@ -65,7 +57,20 @@ def lerqr(x,height,width):
 while True:
     img = cv2.imread('./img/dirnal.png')
     height, width, channels = img.shape
-    print(lerqr(img,height,width))
+    result = lerqr(img,height,width)
+    if result:
+        for leitura in decode(img):
+            barcodeData = leitura.data.decode("utf-8")
+            (x, y, w, h) = leitura.rect
+            qr = json.loads(barcodeData)
+            if result[0]['e'] == result[1]['e']:
+                if qr in result:
+                    if 'end' in qr:
+                        cv2.rectangle(img, (x, y), (x + w, y + h), (0,255,0), 15) 
+                    elif 'p' in qr:
+                        cv2.rectangle(img, (x, y), (x + w, y + h), (255,0,255), 15) 
+
+
     cv2.imshow("camera",img)
     key = cv2.waitKey(5)
     if key == 27:
