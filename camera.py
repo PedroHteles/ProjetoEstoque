@@ -1,14 +1,16 @@
-
+from collections import namedtuple
 import cv2
 from pyzbar.pyzbar import decode
 import json
 import numpy as np
 
-qrlidos = []
 banco = [({'end': 0, 'e': 25}, {'p': 1, 'e': 25})]
 validado = []
 naoValido = []
-areaLeitura = []
+
+leituraProduto = []
+leituraEndereco = []
+area = []
 
 def lerqr(x,height,width):
     start_point = (int(width / 8), int(height  / 8))
@@ -25,48 +27,46 @@ def lerqr(x,height,width):
             qrEnd = 'end' in qr
             qrProd = 'p' in qr
             if leituraArea: 
-                if qrEnd and qr not in qrlidos or qrProd and qr not in qrlidos:
-                    qrlidos.append(qr) 
-                if len(decode(img)) > 2:
-                    if qr not in areaLeitura:
-                        areaLeitura.append(qr)
-                        validado.clear()
-                    qrlidos.clear()
-                elif len(decode(img)) <= 2:
-                    areaLeitura.clear()
+                if qrEnd and qr not in leituraEndereco:
+                    leituraEndereco.append(qr) 
+                elif  qrProd and qr not in leituraProduto and leituraEndereco !=[]:
+                    leituraProduto.append(qr) 
 
-                if len(qrlidos) == 2 and qrlidos not in validado and areaLeitura == []:
-                    for i in qrlidos:
-                        valor = (qrlidos[0],qrlidos[1])
-                        if qrProd and 'end' in i: 
-                            if valor not in validado and qr['e'] == i['e']:
-                                print('validado')
+                if qrProd and len(decode(img)) == 1:
+                    leituraEndereco.clear()
+                    validado.clear()
+                elif qrEnd and len(decode(img)) == 1:
+                    leituraProduto.clear()
+                    validado.clear()
+                
+                elif len(decode(img)) == 2:
+                    area.clear()
+                    if len(decode(img)) == 2 and area == []:
+                        valor = (leituraEndereco[0],leituraProduto[0])
+                        if valor[0]['e'] == valor[1]['e']:
+                            print('validado')
+                            if valor not in validado:
                                 validado.append(valor)
-                                qrlidos.clear()
-                            elif qr['e'] != i['e']:
+                            return validado
+                        else:
+                            if valor not in naoValido:
                                 print('Nao validado')
-                                if valor not in naoValido:
-                                    naoValido.append(valor)
-                    for i in validado:
-                        if qr == i[0]:
-                            cv2.rectangle(img, (x, y), (x + w, y + h), (0,255, 0), 15)
-                        elif qr == i[1]:
-                            cv2.rectangle(img, (x, y), (x + w, y + h), (255,0,255), 15)
+                                naoValido.append(valor)
+                            return naoValido
+                else:
+                    if qr not in area:
+                        area.append(qr)
+                    if len(area) == len(decode(img)):
+                        return area    
             else:
                 cv2.rectangle(img, (x, y), (x + w, y + h), (0,0,255), 15)                   
         except:
             cv2.rectangle(img, (x, y), (x + w, y + h), (0,255, 255), 2)
-
 while True:
     img = cv2.imread('./img/dirnal.png')
     height, width, channels = img.shape
-    lerqr(img,height,width)
+    print(lerqr(img,height,width))
     cv2.imshow("camera",img)
     key = cv2.waitKey(5)
     if key == 27:
         break
-
-
-    
-
-        
