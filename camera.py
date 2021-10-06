@@ -41,8 +41,6 @@ def lerqr(x,height,width):
                         leituraEndereco.clear()
                         return validado[0]
                 else:
-                    # print(len(leituraEndereco),len(leituraProduto),len(decode(img)),leituraProduto)
-
                     if qrEnd and qr not in leituraEndereco:
                         leituraEndereco.append(qr) 
                     elif  qrProd and qr not in leituraProduto and leituraEndereco !=[]:
